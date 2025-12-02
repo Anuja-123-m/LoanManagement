@@ -1,0 +1,132 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Help Section</h1>
+    <button class="btn btn-primary" (click)="showAddHelpForm()" *ngIf="!showAddForm">
+      <i class="bi bi-plus-circle"></i> Submit Help Request
+    </button>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <!-- Add Help Report Form -->
+  <div class="card mb-4" *ngIf="showAddForm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Submit Help Request</h5>
+    </div>
+    <div class="card-body">
+      <form #helpForm="ngForm" (ngSubmit)="submitHelpReport(helpForm)" novalidate>
+        <div class="mb-3">
+          <label for="category" class="form-label">Category *</label>
+          <select
+            class="form-select"
+            id="category"
+            name="category"
+            [(ngModel)]="newHelpReport.category"
+            #category="ngModel"
+            required
+            [class.is-invalid]="category.invalid && (category.dirty || category.touched)"
+          >
+            <option value="">Select Category</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="category.invalid && (category.dirty || category.touched)">
+            Please select a category.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="title" class="form-label">Title *</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            [(ngModel)]="newHelpReport.title"
+            #title="ngModel"
+            required
+            maxlength="200"
+            placeholder="Enter help request title"
+            [class.is-invalid]="title.invalid && (title.dirty || title.touched)"
+          />
+          <div class="invalid-feedback" *ngIf="title.invalid && (title.dirty || title.touched)">
+            Title is required.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description *</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            [(ngModel)]="newHelpReport.description"
+            #description="ngModel"
+            required
+            rows="5"
+            placeholder="Describe your issue or question"
+            [class.is-invalid]="description.invalid && (description.dirty || description.touched)"
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="description.invalid && (description.dirty || description.touched)">
+            Description is required.
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="helpForm.invalid || isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isLoading ? 'Submitting...' : 'Submit' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="cancelAddHelp()" [disabled]="isLoading">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="text-center" *ngIf="isLoading && !showAddForm">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Help Reports -->
+  <div class="row g-4" *ngIf="!isLoading">
+    <div class="col-md-6 col-lg-4" *ngFor="let report of helpReports">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">{{ report.title }}</h6>
+          <span [ngClass]="getStatusBadgeClass(report.status)">
+            {{ report.status }}
+          </span>
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ report.description }}</p>
+          <small class="text-muted">
+            <strong>Category:</strong> {{ report.category }}<br>
+            <strong>Created:</strong> {{ report.createdDate | date:'short' }}
+          </small>
+          <div *ngIf="report.resolution" class="mt-2">
+            <strong>Resolution:</strong>
+            <p class="text-success">{{ report.resolution }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="helpReports.length === 0">
+      <div class="alert alert-info">
+        No help reports found.
+      </div>
+    </div>
+  </div>
+</div>
+

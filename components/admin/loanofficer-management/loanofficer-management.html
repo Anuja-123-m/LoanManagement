@@ -1,0 +1,88 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Loan Officer Management</h1>
+    <button class="btn btn-primary" (click)="loadLoanOfficers()">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="text-center" *ngIf="isLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Loan Officers Table -->
+  <div class="card" *ngIf="!isLoading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Employee ID</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let officer of loanOfficers">
+              <td>{{ officer.officerId }}</td>
+              <td>{{ officer.firstName }} {{ officer.lastName }}</td>
+              <td>{{ officer.user?.email || 'N/A' }}</td>
+              <td>{{ officer.phoneNumber || 'N/A' }}</td>
+              <td>{{ officer.employeeId || 'N/A' }}</td>
+              <td>{{ officer.department || 'N/A' }}</td>
+              <td>
+                <span [ngClass]="getStatusBadgeClass(officer.status)">
+                  {{ officer.status }}
+                </span>
+              </td>
+              <td>{{ officer.createdDate | date:'short' }}</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-success me-2"
+                  (click)="approveLoanOfficer(officer)"
+                  *ngIf="officer.status !== 'Approved'"
+                  title="Approve Loan Officer"
+                >
+                  Approve
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="rejectLoanOfficer(officer)"
+                  *ngIf="officer.status !== 'Rejected'"
+                  title="Reject Loan Officer"
+                >
+                  Reject
+                </button>
+                <span class="text-muted" *ngIf="officer.status === 'Approved'">Approved</span>
+                <span class="text-muted" *ngIf="officer.status === 'Rejected'">Rejected</span>
+              </td>
+            </tr>
+            <tr *ngIf="loanOfficers.length === 0">
+              <td colspan="9" class="text-center">No loan officers found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

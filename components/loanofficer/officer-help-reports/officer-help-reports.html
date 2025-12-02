@@ -1,0 +1,52 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Help Reports</h1>
+    <button class="btn btn-primary" (click)="loadHelpReports()">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="text-center" *ngIf="isLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Help Reports Cards -->
+  <div class="row g-4" *ngIf="!isLoading">
+    <div class="col-md-6 col-lg-4" *ngFor="let report of helpReports">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">{{ report.title }}</h6>
+          <span [ngClass]="getStatusBadgeClass(report.status)">
+            {{ report.status }}
+          </span>
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ report.description }}</p>
+          <small class="text-muted">
+            <strong>Category:</strong> {{ report.category }}<br>
+            <strong>Created:</strong> {{ report.createdDate | date:'short' }}
+          </small>
+          <div *ngIf="report.resolution" class="mt-2">
+            <strong>Resolution:</strong>
+            <p class="text-success">{{ report.resolution }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="helpReports.length === 0">
+      <div class="alert alert-info">
+        No help reports found.
+      </div>
+    </div>
+  </div>
+</div>
+

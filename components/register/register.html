@@ -1,0 +1,92 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h3 class="mb-0">Register</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+            {{ successMessage }}
+          </div>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </div>
+          <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                [(ngModel)]="registerData.email"
+                #email="ngModel"
+                required
+                email
+                placeholder="Enter your email"
+                [class.is-invalid]="email.invalid && (email.dirty || email.touched)"
+              />
+              <div class="invalid-feedback" *ngIf="email.invalid && (email.dirty || email.touched)">
+                <div *ngIf="email.errors?.['required']">Email is required.</div>
+                <div *ngIf="email.errors?.['email']">Please enter a valid email address.</div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                [(ngModel)]="registerData.password"
+                #password="ngModel"
+                required
+                minlength="6"
+                placeholder="Enter your password"
+                [class.is-invalid]="password.invalid && (password.dirty || password.touched)"
+              />
+              <div class="invalid-feedback" *ngIf="password.invalid && (password.dirty || password.touched)">
+                <div *ngIf="password.errors?.['required']">Password is required.</div>
+                <div *ngIf="password.errors?.['minlength']">Password must be at least 6 characters.</div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+                name="confirmPassword"
+                [(ngModel)]="registerData.confirmPassword"
+                #confirmPassword="ngModel"
+                required
+                placeholder="Confirm your password"
+                [class.is-invalid]="(confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)) || (registerData.password !== registerData.confirmPassword && confirmPassword.touched)"
+              />
+              <div class="invalid-feedback" *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)">
+                <div *ngIf="confirmPassword.errors?.['required']">Please confirm your password.</div>
+              </div>
+              <div class="invalid-feedback" *ngIf="registerData.password !== registerData.confirmPassword && confirmPassword.touched && confirmPassword.dirty">
+                Passwords do not match.
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg" [disabled]="registerForm.invalid || isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ isLoading ? "Registering..." : "Register" }}
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="onReset(registerForm)" [disabled]="isLoading">
+                Reset
+              </button>
+            </div>
+          </form>
+          <div class="text-center mt-3">
+            <p>Already have an account? <a routerLink="/login">Login here</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

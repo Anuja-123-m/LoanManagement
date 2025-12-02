@@ -1,0 +1,130 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h3 class="mb-0">Apply for Loan</h3>
+        </div>
+        <div class="card-body p-4">
+          <!-- Success/Error Messages -->
+          <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+            {{ successMessage }}
+            <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+          </div>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+            <strong>Error:</strong> {{ errorMessage }}
+            <div class="mt-2" *ngIf="errorMessage.includes('does not exist') || errorMessage.includes('Customer ID')">
+              <small>
+                <strong>Note:</strong> A Customer profile must be created first before applying for a loan. 
+                Please ensure you have registered as a customer and your profile has been approved by an admin.
+              </small>
+            </div>
+            <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+          </div>
+
+          <!-- Loan Application Form -->
+          <form #loanForm="ngForm" (ngSubmit)="onSubmit(loanForm)" novalidate>
+            <!-- Loan Type -->
+            <div class="mb-3">
+              <label for="loanType" class="form-label">Loan Type *</label>
+              <select
+                class="form-select"
+                id="loanType"
+                name="loanType"
+                [(ngModel)]="loanRequest.loanType"
+                #loanType="ngModel"
+                required
+                [class.is-invalid]="loanType.invalid && (loanType.dirty || loanType.touched)"
+              >
+                <option value="">Select Loan Type</option>
+                <option *ngFor="let type of loanTypes" [value]="type">{{ type }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="loanType.invalid && (loanType.dirty || loanType.touched)">
+                Please select a loan type.
+              </div>
+            </div>
+
+            <!-- Loan Amount -->
+            <div class="mb-3">
+              <label for="loanAmount" class="form-label">Loan Amount *</label>
+              <input
+                type="number"
+                class="form-control"
+                id="loanAmount"
+                name="loanAmount"
+                [(ngModel)]="loanRequest.loanAmount"
+                #loanAmount="ngModel"
+                required
+                min="1000"
+                step="0.01"
+                placeholder="Enter loan amount"
+                [class.is-invalid]="loanAmount.invalid && (loanAmount.dirty || loanAmount.touched)"
+              />
+              <div class="invalid-feedback" *ngIf="loanAmount.invalid && (loanAmount.dirty || loanAmount.touched)">
+                <div *ngIf="loanAmount.errors?.['required']">Loan amount is required.</div>
+                <div *ngIf="loanAmount.errors?.['min']">Loan amount must be at least ₹1,000.</div>
+              </div>
+            </div>
+
+            <!-- Tenure (Months) -->
+            <div class="mb-3">
+              <label for="tenureMonths" class="form-label">Tenure (Months) *</label>
+              <input
+                type="number"
+                class="form-control"
+                id="tenureMonths"
+                name="tenureMonths"
+                [(ngModel)]="loanRequest.tenureMonths"
+                #tenureMonths="ngModel"
+                required
+                min="1"
+                max="360"
+                placeholder="Enter tenure in months"
+                [class.is-invalid]="tenureMonths.invalid && (tenureMonths.dirty || tenureMonths.touched)"
+              />
+              <div class="invalid-feedback" *ngIf="tenureMonths.invalid && (tenureMonths.dirty || tenureMonths.touched)">
+                <div *ngIf="tenureMonths.errors?.['required']">Tenure is required.</div>
+                <div *ngIf="tenureMonths.errors?.['min']">Tenure must be at least 1 month.</div>
+                <div *ngIf="tenureMonths.errors?.['max']">Tenure cannot exceed 360 months.</div>
+              </div>
+            </div>
+
+            <!-- Purpose -->
+            <div class="mb-4">
+              <label for="purpose" class="form-label">Purpose</label>
+              <textarea
+                class="form-control"
+                id="purpose"
+                name="purpose"
+                [(ngModel)]="loanRequest.purpose"
+                rows="4"
+                placeholder="Enter the purpose of the loan (optional)"
+              ></textarea>
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                [disabled]="loanForm.invalid || isLoading"
+              >
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ isLoading ? 'Submitting...' : 'Submit Application' }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="onReset(loanForm)"
+                [disabled]="isLoading"
+              >
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

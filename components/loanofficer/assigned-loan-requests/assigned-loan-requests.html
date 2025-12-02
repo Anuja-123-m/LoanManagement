@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Assigned Loan Requests</h1>
+    <button class="btn btn-primary" (click)="loadAssignedLoanRequests()">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="text-center" *ngIf="isLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Loan Requests Table -->
+  <div class="card" *ngIf="!isLoading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Loan Type</th>
+              <th>Loan Amount</th>
+              <th>Tenure (Months)</th>
+              <th>Purpose</th>
+              <th>Status</th>
+              <th>Request Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let request of loanRequests">
+              <td>{{ request.loanRequestId }}</td>
+              <td>
+                {{ request.customer?.firstName }} {{ request.customer?.lastName }}
+                <br>
+                <small class="text-muted">{{ request.customer?.user?.email }}</small>
+              </td>
+              <td>{{ request.loanType }}</td>
+              <td>{{ request.loanAmount | number:'1.2-2' }}</td>
+              <td>{{ request.tenureMonths }}</td>
+              <td>{{ request.purpose || 'N/A' }}</td>
+              <td>
+                <span [ngClass]="getStatusBadgeClass(request.status)">
+                  {{ request.status }}
+                </span>
+              </td>
+              <td>{{ request.requestDate | date:'short' }}</td>
+            </tr>
+            <tr *ngIf="loanRequests.length === 0">
+              <td colspan="8" class="text-center">No assigned loan requests found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

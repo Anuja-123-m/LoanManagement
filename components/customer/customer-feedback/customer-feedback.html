@@ -1,0 +1,100 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-success text-white text-center py-3">
+          <h3 class="mb-0">Customer Feedback</h3>
+        </div>
+        <div class="card-body p-4">
+          <!-- Success/Error Messages -->
+          <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+            {{ successMessage }}
+            <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+          </div>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+            {{ errorMessage }}
+            <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+          </div>
+
+          <!-- Loading Spinner -->
+          <div class="text-center" *ngIf="isLoading">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Feedback Form -->
+          <form #feedbackForm="ngForm" (ngSubmit)="submitFeedback(feedbackForm)" novalidate *ngIf="!isLoading">
+            <!-- Feedback Question (Optional) -->
+            <div class="mb-3" *ngIf="feedbackQuestions.length > 0">
+              <label for="questionId" class="form-label">Question</label>
+              <select
+                class="form-select"
+                id="questionId"
+                name="questionId"
+                [(ngModel)]="feedback.questionId"
+              >
+                <option [value]="undefined">Select a question (optional)</option>
+                <option *ngFor="let question of feedbackQuestions" [value]="question.questionId">
+                  {{ question.question }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Rating -->
+            <div class="mb-3">
+              <label for="rating" class="form-label">Rating (1-5)</label>
+              <select
+                class="form-select"
+                id="rating"
+                name="rating"
+                [(ngModel)]="feedback.rating"
+              >
+                <option [value]="undefined">Select Rating (optional)</option>
+                <option [value]="1">1 - Poor</option>
+                <option [value]="2">2 - Fair</option>
+                <option [value]="3">3 - Good</option>
+                <option [value]="4">4 - Very Good</option>
+                <option [value]="5">5 - Excellent</option>
+              </select>
+            </div>
+
+            <!-- Feedback Text -->
+            <div class="mb-4">
+              <label for="feedbackText" class="form-label">Your Feedback</label>
+              <textarea
+                class="form-control"
+                id="feedbackText"
+                name="feedbackText"
+                [(ngModel)]="feedback.feedbackText"
+                rows="6"
+                placeholder="Please share your feedback, suggestions, or comments..."
+              ></textarea>
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-success btn-lg"
+                [disabled]="isLoading"
+              >
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ isLoading ? 'Submitting...' : 'Submit Feedback' }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="onReset(feedbackForm)"
+                [disabled]="isLoading"
+              >
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

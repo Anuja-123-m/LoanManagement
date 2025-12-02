@@ -1,0 +1,69 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" routerLink="/">Loan Management System</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Home
+          </a>
+        </li>
+        
+        <!-- Admin Links -->
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin" routerLinkActive="active">Admin Dashboard</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin/customers" routerLinkActive="active">Customers</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin/loanrequests" routerLinkActive="active">Loan Requests</a>
+        </li>
+
+        <!-- Customer Links -->
+        <li class="nav-item" *ngIf="isCustomer()">
+          <a class="nav-link" routerLink="/customer" routerLinkActive="active">Dashboard</a>
+        </li>
+        <li class="nav-item" *ngIf="isCustomer()">
+          <a class="nav-link" routerLink="/customer/apply-loan" routerLinkActive="active">Apply Loan</a>
+        </li>
+        <li class="nav-item" *ngIf="isCustomer()">
+          <a class="nav-link" routerLink="/customer/loanrequests" routerLinkActive="active">My Requests</a>
+        </li>
+
+        <!-- Loan Officer Links -->
+        <li class="nav-item" *ngIf="isLoanOfficer()">
+          <a class="nav-link" routerLink="/loanofficer" routerLinkActive="active">Dashboard</a>
+        </li>
+        <li class="nav-item" *ngIf="isLoanOfficer()">
+          <a class="nav-link" routerLink="/loanofficer/loanrequests" routerLinkActive="active">Assigned Requests</a>
+        </li>
+
+        <!-- Authentication Links -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login" routerLinkActive="active" *ngIf="!isLoggedIn()">
+            Login
+          </a>
+          <a class="nav-link" routerLink="/register" routerLinkActive="active" *ngIf="!isLoggedIn()">
+            Register
+          </a>
+          <a class="nav-link" href="javascript:void(0)" (click)="onLogout()" *ngIf="isLoggedIn()">
+            Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+

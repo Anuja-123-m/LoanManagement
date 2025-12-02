@@ -1,0 +1,162 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Customer Management</h1>
+    <div>
+      <button class="btn btn-success me-2" (click)="openAddForm()">
+        <i class="bi bi-plus-circle"></i> Add Customer
+      </button>
+      <button class="btn btn-primary" (click)="loadCustomers()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <!-- Add Customer Form Modal -->
+  <div class="modal fade show" [class.show]="showAddForm" *ngIf="showAddForm" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Customer</h5>
+          <button type="button" class="btn-close" (click)="closeAddForm()"></button>
+        </div>
+        <div class="modal-body">
+          <form #customerForm="ngForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="firstName" [(ngModel)]="newCustomer.firstName" name="firstName" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="lastName" [(ngModel)]="newCustomer.lastName" name="lastName" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="phoneNumber" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phoneNumber" [(ngModel)]="newCustomer.phoneNumber" name="phoneNumber">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" id="dateOfBirth" [(ngModel)]="dateOfBirthString" name="dateOfBirth">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="address" class="form-label">Address</label>
+              <textarea class="form-control" id="address" rows="2" [(ngModel)]="newCustomer.address" name="address"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" [(ngModel)]="newCustomer.city" name="city">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" [(ngModel)]="newCustomer.state" name="state">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="zipCode" class="form-label">Zip Code</label>
+                <input type="text" class="form-control" id="zipCode" [(ngModel)]="newCustomer.zipCode" name="zipCode">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="aadharNumber" class="form-label">Aadhar Number</label>
+                <input type="text" class="form-control" id="aadharNumber" [(ngModel)]="newCustomer.aadharNumber" name="aadharNumber">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="panNumber" class="form-label">PAN Number</label>
+                <input type="text" class="form-control" id="panNumber" [(ngModel)]="newCustomer.panNumber" name="panNumber">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAddForm()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="addCustomer()" [disabled]="isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            Add Customer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="text-center" *ngIf="isLoading && !showAddForm">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Customers Table -->
+  <div class="card" *ngIf="!isLoading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of customers">
+              <td>{{ customer.customerId }}</td>
+              <td>{{ customer.firstName }} {{ customer.lastName }}</td>
+              <td>{{ customer.user?.email || 'N/A' }}</td>
+              <td>{{ customer.phoneNumber || 'N/A' }}</td>
+              <td>{{ customer.city || 'N/A' }}</td>
+              <td>
+                <span [ngClass]="getStatusBadgeClass(customer.status)">
+                  {{ customer.status }}
+                </span>
+              </td>
+              <td>{{ customer.createdDate | date:'short' }}</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-success me-2"
+                  (click)="approveCustomer(customer)"
+                  *ngIf="customer.status !== 'Approved'"
+                  title="Approve Customer"
+                >
+                  Approve
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="rejectCustomer(customer)"
+                  *ngIf="customer.status !== 'Rejected'"
+                  title="Reject Customer"
+                >
+                  Reject
+                </button>
+                <span class="text-muted" *ngIf="customer.status === 'Approved'">Approved</span>
+                <span class="text-muted" *ngIf="customer.status === 'Rejected'">Rejected</span>
+              </td>
+            </tr>
+            <tr *ngIf="customers.length === 0">
+              <td colspan="8" class="text-center">No customers found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
